@@ -1,28 +1,65 @@
 import React from 'react';
-// import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-dom';
-import { Router, Route, browserHistory } from 'react-router';
-// // Authenicate HOC
-// import authenticate from './hoc/authenticate';
-// import translationWrapper from './hoc/translation';
+// import { Router, Route, browserHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
-// // Layouts
-// import BlankLayout from '../layouts/BlankLayout';
-// import MainLayout from '../layouts/MainLayout';
+import usersData from './usersData';
 
-// Modules
+// Components
 import Admin from './components/admin';
+import Dashboard from './components/dashboard';
 import Login from './components/login';
+import Schedules from './components/schedules';
 
-// const PrivateRoute = translationWrapper(authenticate(true)(MainLayout));
-// const LoginRoute = translationWrapper(authenticate(false)(BlankLayout));
+const PrivateRoute = (props) => {
+    const { name, pass } = localStorage;
+    let redirect = false;
+    usersData.forEach(row => {
+        if (row.name === name) {
+            if (row.pass === pass) {
+                redirect = true;
+            }
+        }
+    });
+    if (!redirect) {
+        return <Redirect to="/login" />; 
+    }
+    const { path, component, ...rest } = props;
+    const Component = component;
+
+    if (path === '/admin') {
+        return (
+            <AdminRoute path={path} component={component} {...rest} />
+        )
+    }
+
+    return (
+        <Component {...rest} />
+    );
+};
+
+const Private = withRouter(PrivateRoute);
+
+const AdminRoute = (props) => {
+    const user = localStorage;
+    if (user.role !== 'Admin') {
+        return <Redirect to="/dashboard" />
+        
+    }
+    const { component, ...rest } = props;
+    const Component = component;
+    return (
+        <Component {...rest} />
+    );
+}
 
 export default () => (
-    <Router history={browserHistory}>
-        <Route exact path="/admin" component={Admin} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="*" component={() => (<div>No page found</div>)} />
-        {/* <LoginRoute path="/auth" component={Auth} /> */}
-        {/* <PrivateRoute path="/dashboard" component={Dashboard} /> */}
-        {/* <Redirect to="/auth/login" /> */}
+    <Router>
+        <Switch>
+            <Route exact path="/login" component={Login} />
+            <Private exact path="/admin" component={Admin} />
+            <Private exact path="/dashboard" component={Dashboard} />
+            <Private exact path="/schedules" component={Schedules} />
+            <Redirect exact path="*" to="/login" />
+        </Switch>
     </Router>
 );

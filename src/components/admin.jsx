@@ -1,7 +1,8 @@
 import React from 'react';
+import Navbar from './navbar';
 import usersData from '../usersData';
 
-export default () => {
+export default (props) => {
     const renderRows = () => {
         return usersData.map((row, index) => (
             <tr key={row.name + index}>
@@ -14,7 +15,9 @@ export default () => {
     }
 
     return (
-        <table className="table">
+        <div>
+            <Navbar {...props} />
+            <table className="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -27,5 +30,7 @@ export default () => {
                 {renderRows()}
             </tbody>
         </table>
+        </div>
+        
     )
 }

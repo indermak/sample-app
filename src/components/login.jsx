@@ -15,7 +15,10 @@ export default class Login extends React.Component {
         usersData.forEach(row => {
             if (row.name === this.username.value) {
                 if (row.pass === this.password.value) {
-                    this.props.router.push('/dashboard');
+                    localStorage.setItem('name', row.name);
+                    localStorage.setItem('pass', row.pass);
+                    localStorage.setItem('role', row.role);
+                    this.props.history.push('/dashboard');
                     redirect = true;
                 }
             }
@@ -31,14 +34,13 @@ export default class Login extends React.Component {
         const { error } = this.state;
         return (
             <div>
-                
                 <form>
                     <div className="form-group">
-                        <label htmlFor="exampleInputEmail1">Email address </label>
-                        <input type="email" ref={input => { this.username = input }} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
+                        <label htmlFor="username">Username </label>
+                        <input type="email" ref={input => { this.username = input }} className="form-control" id="username" placeholder="Enter username" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="exampleInputPassword1">Password </label>
+                        <label htmlFor="password">Password </label>
                         <input type="password" ref={password => { this.password = password }} className="form-control" id="exampleInputPassword1" placeholder="Password" />
                     </div>
                     <button type="submit" className="btn btn-primary" onClick={event => this.onFormSubmit(event)}>Submit</button>
